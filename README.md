@@ -42,7 +42,7 @@ A RESTful forum API where users sign up, publish posts, and vote on others - bui
 | `DELETE` | `/posts/{id}` | Yes | Delete a post (owner only) |
 | `POST` | `/vote/` | Yes | Upvote or remove a vote on a post |
 
-Interactive docs (live): `https://threadbase-d8a4ccf7145c.herokuapp.com/`
+Interactive docs (live): `https://threadbase-d8a4ccf7145c.herokuapp.com/docs`
 
 ---
 
