@@ -9,3 +9,6 @@ venv/
 .idea/
 *.db
 .pytest_cache/
+.git/
+docker-compose*.yml
+Procfile
