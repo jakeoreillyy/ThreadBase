@@ -98,6 +98,11 @@ def update_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"post with id: {id} was not found",
         )
+    if updated_post.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to preform requested action",
+        )
     post_query.update(post.model_dump(), synchronize_session=False)
     db.commit()
     return post_query.first()
