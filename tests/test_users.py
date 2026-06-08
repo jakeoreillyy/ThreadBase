@@ -27,7 +27,7 @@ def test_login_user(client, test_user):
     id = payload.get("user_id")
     assert id == test_user["id"]
     assert login_response.token_type == "bearer"
-    assert response.status_code == 201 #changed to validate CI
+    assert response.status_code == 200
 
 
 @pytest.mark.parametrize(
