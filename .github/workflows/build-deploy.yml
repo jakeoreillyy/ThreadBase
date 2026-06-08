@@ -7,7 +7,7 @@ on:
   pull_request:
 
 env:
-  IMAGE_NAME: jakeoreillyy/threadbase
+  IMAGE_NAME: jakeoreilly/threadbase
 
 jobs:
   automated_pipeline:
