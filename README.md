@@ -1,4 +1,4 @@
-﻿# ThreadBase
+# ThreadBase
 
 A RESTful forum API where users sign up, publish posts, and vote on others - built with FastAPI and PostgreSQL.
 
@@ -11,6 +11,8 @@ A RESTful forum API where users sign up, publish posts, and vote on others - bui
 * **Database:** PostgreSQL
 * **ORM:** SQLAlchemy with Alembic migrations
 * **Auth:** OAuth2 password flow, JWT bearer tokens, bcrypt hashing via Passlib
+* **Testing:** Pytest with a dedicated test database and fixtures
+* **CI/CD:** GitHub Actions (test, build, deploy)
 * **Deployment:** Heroku (live) · Docker Hub image available
 
 ---
@@ -25,6 +27,7 @@ A RESTful forum API where users sign up, publish posts, and vote on others - bui
 * Normalised 3-table PostgreSQL schema (users, posts, votes) with foreign-key constraints and cascading deletes
 * Dockerised with separate dev and prod Compose configurations
 * Automated database migrations on deploy via Alembic release phase
+* Automated test, build, and deploy pipeline via GitHub Actions
 
 ---
 
@@ -150,3 +153,36 @@ docker-compose -f docker-compose-dev.yml exec api alembic upgrade head
 ```
 
 For a production-like environment (no volume mount, no `--reload`), use `docker-compose-prod.yml` instead.
+
+---
+
+## Testing
+
+The test suite uses pytest with a dedicated test database, spun up fresh for each test function so cases run in isolation. Fixtures handle user creation, token generation, an authorised client, and seed posts.
+
+Coverage spans all four routers - authentication, users, posts, and votes, including:
+
+* User registration and login, with parameterised invalid-credential cases
+* JWT issuing and decoding on login
+* Post CRUD with ownership enforcement (403 on editing or deleting another user's post)
+* Unauthorised access returning 401 across protected routes
+* Voting, duplicate-vote conflicts (409), and removing votes
+* 404 handling for non-existent posts and votes
+
+Set up a test database named `<your_database_name>_test`, then run:
+
+```
+pytest -v -s
+```
+
+---
+
+## CI/CD
+
+A GitHub Actions pipeline (`.github/workflows/build-deploy.yml`) runs automatically on every push and pull request to `main`:
+
+1. **Test** - spins up a Postgres service container, installs dependencies, and runs the full pytest suite against a fresh test database
+2. **Build** - builds the Docker image and pushes it to Docker Hub (only after tests pass)
+3. **Deploy** - releases the new build to Heroku, where Alembic migrations run automatically via the `release` phase in the `Procfile`
+
+Deployment only proceeds if the test and build stages succeed, so broken code never reaches production.
